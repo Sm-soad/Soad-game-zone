@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOAD Game Zone</title>
+    <title>SOAD Game Zone - Carrom Game</title>
     <style>
         body {
             display: flex;
@@ -11,17 +11,12 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #222;
+            background-color: #333;
             color: white;
             font-family: Arial, sans-serif;
-            overflow: hidden;
         }
         .container {
             text-align: center;
-        }
-        h1 {
-            font-size: 2.5em;
-            color: #ff4f4f;
         }
         .enter-button {
             font-size: 1.2em;
@@ -35,19 +30,25 @@
         .game-container {
             display: none;
             position: relative;
+            width: 500px;
+            height: 500px;
+            background-color: #d9a66a;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px #000;
         }
         .score {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            font-size: 1.5em;
+            font-size: 1.2em;
+            color: white;
+            margin-top: 10px;
         }
-        #soad-text {
-            font-size: 0.7em;
+        #scoreText {
+            font-size: 1em;
             color: #FFD700;
         }
         canvas {
-            background: linear-gradient(#333, #555);
+            background: #FFFFFF;
+            border: 5px solid #222;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -59,87 +60,62 @@
     </div>
 
     <div class="game-container">
-        <div class="score">Score: <span id="score">0</span> <span id="soad-text">SOAD</span></div>
-        <canvas id="gameCanvas" width="400" height="600"></canvas>
+        <div class="score" id="scoreText">Score - Red: <span id="redScore">0</span>, White: <span id="whiteScore">0</span> (SOAD)</div>
+        <canvas id="carromBoard" width="500" height="500"></canvas>
     </div>
 
     <script>
-        let score = 0;
-        const gameContainer = document.querySelector('.game-container');
-        const scoreDisplay = document.getElementById('score');
-        const canvas = document.getElementById('gameCanvas');
+        const canvas = document.getElementById('carromBoard');
         const ctx = canvas.getContext('2d');
-
-        // Motorcycle properties
-        let motorcycle = { x: 180, y: 500, width: 50, height: 100 };
-        let obstacles = [];
+        let redScore = 0, whiteScore = 0;
 
         function startGame() {
             document.querySelector('.container').style.display = 'none';
-            gameContainer.style.display = 'block';
-            gameLoop();
+            document.querySelector('.game-container').style.display = 'block';
+            drawCarromBoard();
+            updateScore();
         }
 
-        // Touch event to move motorcycle
-        canvas.addEventListener("touchstart", (e) => {
-            if (e.touches[0].clientX < window.innerWidth / 2) {
-                motorcycle.x -= 50;
-            } else {
-                motorcycle.x += 50;
-            }
-            motorcycle.x = Math.max(0, Math.min(canvas.width - motorcycle.width, motorcycle.x));
-        });
-
-        function drawMotorcycle() {
-            ctx.fillStyle = 'blue';
-            ctx.fillRect(motorcycle.x, motorcycle.y, motorcycle.width, motorcycle.height);
+        function updateScore() {
+            document.getElementById('redScore').innerText = redScore;
+            document.getElementById('whiteScore').innerText = whiteScore;
         }
 
-        function createObstacle() {
-            const colors = ["red", "green", "yellow", "purple"];
-            const x = Math.floor(Math.random() * (canvas.width - 50));
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            obstacles.push({ x: x, y: -100, width: 50, height: 100, color: color });
-        }
-
-        function updateObstacles() {
-            for (let i = 0; i < obstacles.length; i++) {
-                obstacles[i].y += 5;
-                if (obstacles[i].y > canvas.height) {
-                    obstacles.splice(i, 1);
-                    score++;
-                    scoreDisplay.innerText = score;
-                }
-                if (
-                    motorcycle.x < obstacles[i].x + obstacles[i].width &&
-                    motorcycle.x + motorcycle.width > obstacles[i].x &&
-                    motorcycle.y < obstacles[i].y + obstacles[i].height &&
-                    motorcycle.height + motorcycle.y > obstacles[i].y
-                ) {
-                    alert("Game Over! Your score: " + score);
-                    document.location.reload();
-                }
-            }
-        }
-
-        function drawObstacles() {
-            obstacles.forEach(obstacle => {
-                ctx.fillStyle = obstacle.color;
-                ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-            });
-        }
-
-        function gameLoop() {
+        function drawCarromBoard() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawMotorcycle();
-            drawObstacles();
-            updateObstacles();
 
-            if (Math.random() < 0.02) {
-                createObstacle();
-            }
+            // Draw pockets
+            ctx.fillStyle = '#000';
+            const pocketRadius = 15;
+            const pockets = [
+                { x: 20, y: 20 },
+                { x: canvas.width - 20, y: 20 },
+                { x: 20, y: canvas.height - 20 },
+                { x: canvas.width - 20, y: canvas.height - 20 }
+            ];
+            pockets.forEach(pocket => {
+                ctx.beginPath();
+                ctx.arc(pocket.x, pocket.y, pocketRadius, 0, Math.PI * 2);
+                ctx.fill();
+            });
 
-            requestAnimationFrame(gameLoop);
+            // Draw "SOAD" in center
+            ctx.font = '24px Arial';
+            ctx.fillStyle = '#FFD700';
+            ctx.textAlign = 'center';
+            ctx.fillText('SOAD', canvas.width / 2, canvas.height / 2);
+
+            // Draw red and white pieces
+            drawPiece(250, 250, 10, 'red');
+            drawPiece(220, 250, 10, 'white');
+        }
+
+        function drawPiece(x, y, radius, color) {
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.closePath();
         }
     </script>
 </body>
