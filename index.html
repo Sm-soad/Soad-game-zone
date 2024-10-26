@@ -1,167 +1,110 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOAD Game Zone</title>
+    <title>Sushi Party Game</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #000; /* Black background */
-            color: white;
             margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
         }
-
-        h1 {
-            margin-bottom: 10px;
+        #gameContainer {
+            position: relative;
+            width: 80vw;
+            height: 80vh;
+            background: #e0d2b9;
+            overflow: hidden;
         }
-
-        h2 {
-            margin-bottom: 20px;
+        .player {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-color: lightgreen;
+            border-radius: 50%;
         }
-
-        #gameCanvas {
-            border: 2px solid #fff; /* White border for canvas */
-            background-color: #000; /* Black background for canvas */
-            touch-action: none; /* Disable default touch actions */
+        .food {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: pink;
+            border-radius: 50%;
         }
-
-        #score {
-            font-size: 20px;
-            margin-top: 10px;
-        }
-
-        #startButton {
-            padding: 10px 20px;
+        #scoreboard {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #333;
             font-size: 18px;
-            cursor: pointer;
-            background-color: #fff; /* White background for button */
-            border: none;
-            color: black;
-            border-radius: 5px;
-        }
-
-        #startButton:hover {
-            background-color: #ddd; /* Light gray on hover */
+            font-weight: bold;
+            text-align: right;
         }
     </style>
 </head>
 <body>
-
-    <h1>SOAD Game Zone</h1>
-    <h2>Developer: SM SOAD</h2>
-    <button id="startButton">Enter</button>
-    <canvas id="gameCanvas" width="1920" height="1080" style="display:none;"></canvas>
-    <div id="score" style="display:none;">Score: <span id="scoreValue">0</span> SOAD</div>
+    <div id="gameContainer">
+        <div id="scoreboard">
+            <div>#1 PLAYER1 12272</div>
+            <div>#2 PLAYER2 5456</div>
+            <div>#3 PLAYER3 4840</div>
+            <!-- Add more leaderboard entries as needed -->
+        </div>
+        <div class="player" id="player" style="top: 50%; left: 50%;"></div>
+        <div class="food" id="food" style="top: 20%; left: 30%;"></div>
+        <!-- Add more food items as needed -->
+    </div>
 
     <script>
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
-        const startButton = document.getElementById("startButton");
-        const scoreDisplay = document.getElementById("score");
-        const scoreValue = document.getElementById("scoreValue");
-
-        let snake = [{ x: 960, y: 540 }]; // Start in the center of the canvas
-        let food = {};
+        const player = document.getElementById('player');
+        const food = document.getElementById('food');
         let score = 0;
-        let direction = { x: 20, y: 0 }; // Start moving right
-        let gameInterval;
 
-        function startGame() {
-            canvas.style.display = "block";
-            scoreDisplay.style.display = "block";
-            startButton.style.display = "none";
-            spawnFood();
-            gameInterval = setInterval(updateGame, 100);
-            canvas.addEventListener("touchstart", handleTouch);
-        }
+        // Basic keyboard movement for player
+        document.addEventListener('keydown', (e) => {
+            const step = 5;
+            const rect = player.getBoundingClientRect();
+            switch (e.key) {
+                case 'ArrowUp':
+                    player.style.top = `${rect.top - step}px`;
+                    break;
+                case 'ArrowDown':
+                    player.style.top = `${rect.top + step}px`;
+                    break;
+                case 'ArrowLeft':
+                    player.style.left = `${rect.left - step}px`;
+                    break;
+                case 'ArrowRight':
+                    player.style.left = `${rect.left + step}px`;
+                    break;
+            }
+        });
 
-        function handleTouch(event) {
-            const touch = event.touches[0];
-            const x = touch.clientX - canvas.offsetLeft;
-            const y = touch.clientY - canvas.offsetTop;
+        // Simple collision detection
+        function checkCollision() {
+            const playerRect = player.getBoundingClientRect();
+            const foodRect = food.getBoundingClientRect();
 
-            // Move snake based on touch position
-            if (x > snake[0].x) {
-                direction = { x: 20, y: 0 }; // Move right
-            } else if (x < snake[0].x) {
-                direction = { x: -20, y: 0 }; // Move left
-            } else if (y > snake[0].y) {
-                direction = { x: 0, y: 20 }; // Move down
-            } else if (y < snake[0].y) {
-                direction = { x: 0, y: -20 }; // Move up
+            if (
+                playerRect.x < foodRect.x + foodRect.width &&
+                playerRect.x + playerRect.width > foodRect.x &&
+                playerRect.y < foodRect.y + foodRect.height &&
+                playerRect.y + playerRect.height > foodRect.y
+            ) {
+                score += 1;
+                alert('You ate food! Score: ' + score);
+                // Move food to a new random position
+                food.style.top = `${Math.random() * 80}vh`;
+                food.style.left = `${Math.random() * 80}vw`;
             }
         }
 
-        function spawnFood() {
-            food = {
-                x: Math.floor(Math.random() * (canvas.width / 20)) * 20,
-                y: Math.floor(Math.random() * (canvas.height / 20)) * 20,
-            };
-        }
-
-        function updateGame() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Move snake
-            let head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
-            snake.unshift(head);
-
-            // Check if snake eats food
-            if (head.x === food.x && head.y === food.y) {
-                score++;
-                scoreValue.textContent = score;
-                spawnFood();
-            } else {
-                snake.pop();
-            }
-
-            // Check for collisions
-            if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height || collision(head)) {
-                clearInterval(gameInterval);
-                alert("Game Over! Your score: " + score);
-                resetGame();
-                return;
-            }
-
-            // Draw snake
-            snake.forEach((segment, index) => {
-                ctx.fillStyle = index === 0 ? "yellow" : "green"; // Head is yellow, body is green
-                ctx.fillRect(segment.x, segment.y, 20, 20);
-            });
-
-            // Draw food
-            ctx.fillStyle = "red"; // Food color
-            ctx.fillRect(food.x, food.y, 20, 20);
-        }
-
-        function collision(head) {
-            for (let i = 1; i < snake.length; i++) {
-                if (head.x === snake[i].x && head.y === snake[i].y) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        function resetGame() {
-            snake = [{ x: 960, y: 540 }]; // Reset snake to center
-            direction = { x: 20, y: 0 };
-            score = 0;
-            scoreValue.textContent = score;
-            canvas.style.display = "none";
-            scoreDisplay.style.display = "none";
-            startButton.style.display = "block";
-            canvas.removeEventListener("touchstart", handleTouch);
-        }
-
-        startButton.addEventListener("click", startGame);
+        // Check collision continuously
+        setInterval(checkCollision, 100);
     </script>
-
 </body>
 </html>
