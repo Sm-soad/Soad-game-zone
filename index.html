@@ -3,108 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sushi Party Game</title>
+    <title>Trading App</title>
     <style>
+        /* Basic styling for background and buttons */
         body {
-            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f5f5f5;
-            font-family: Arial, sans-serif;
+            margin: 0;
+            background: url('your-4k-background.jpg') no-repeat center center fixed;
+            background-size: cover;
         }
-        #gameContainer {
-            position: relative;
-            width: 80vw;
-            height: 80vh;
-            background: #e0d2b9;
-            overflow: hidden;
+        .trading-container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 8px;
+            width: 300px;
+            text-align: center;
+            color: white;
         }
-        .player {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            background-color: lightgreen;
-            border-radius: 50%;
+        .button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
         }
-        .food {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background-color: pink;
-            border-radius: 50%;
+        .up-button {
+            background-color: #28a745;
         }
-        #scoreboard {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            color: #333;
-            font-size: 18px;
-            font-weight: bold;
-            text-align: right;
+        .down-button {
+            background-color: #dc3545;
+        }
+        .timer {
+            font-size: 24px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
-    <div id="gameContainer">
-        <div id="scoreboard">
-            <div>#1 PLAYER1 12272</div>
-            <div>#2 PLAYER2 5456</div>
-            <div>#3 PLAYER3 4840</div>
-            <!-- Add more leaderboard entries as needed -->
-        </div>
-        <div class="player" id="player" style="top: 50%; left: 50%;"></div>
-        <div class="food" id="food" style="top: 20%; left: 30%;"></div>
-        <!-- Add more food items as needed -->
+    <div class="trading-container">
+        <div class="timer" id="timer">01:00</div>
+        <button class="button up-button" onclick="trade('up')">Up</button>
+        <button class="button down-button" onclick="trade('down')">Down</button>
+        <div id="result"></div>
     </div>
 
     <script>
-        const player = document.getElementById('player');
-        const food = document.getElementById('food');
-        let score = 0;
+        // Timer function for 1 minute countdown
+        let timer = 60;
+        let timerElement = document.getElementById("timer");
 
-        // Basic keyboard movement for player
-        document.addEventListener('keydown', (e) => {
-            const step = 5;
-            const rect = player.getBoundingClientRect();
-            switch (e.key) {
-                case 'ArrowUp':
-                    player.style.top = `${rect.top - step}px`;
-                    break;
-                case 'ArrowDown':
-                    player.style.top = `${rect.top + step}px`;
-                    break;
-                case 'ArrowLeft':
-                    player.style.left = `${rect.left - step}px`;
-                    break;
-                case 'ArrowRight':
-                    player.style.left = `${rect.left + step}px`;
-                    break;
-            }
-        });
-
-        // Simple collision detection
-        function checkCollision() {
-            const playerRect = player.getBoundingClientRect();
-            const foodRect = food.getBoundingClientRect();
-
-            if (
-                playerRect.x < foodRect.x + foodRect.width &&
-                playerRect.x + playerRect.width > foodRect.x &&
-                playerRect.y < foodRect.y + foodRect.height &&
-                playerRect.y + playerRect.height > foodRect.y
-            ) {
-                score += 1;
-                alert('You ate food! Score: ' + score);
-                // Move food to a new random position
-                food.style.top = `${Math.random() * 80}vh`;
-                food.style.left = `${Math.random() * 80}vw`;
+        function updateTimer() {
+            if (timer > 0) {
+                timer--;
+                timerElement.textContent = timer < 10 ? `00:0${timer}` : `00:${timer}`;
             }
         }
 
-        // Check collision continuously
-        setInterval(checkCollision, 100);
+        setInterval(updateTimer, 1000);
+
+        // Function to handle trade
+        function trade(direction) {
+            let resultElement = document.getElementById("result");
+            if (timer > 0) {
+                resultElement.textContent = `You placed a ${direction} trade.`;
+            } else {
+                resultElement.textContent = "Time's up! Please wait for the next round.";
+            }
+        }
     </script>
 </body>
 </html>
