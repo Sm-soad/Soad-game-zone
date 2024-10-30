@@ -3,77 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trading App</title>
+    <title>Telegram Channel</title>
     <style>
-        /* Basic styling for background and buttons */
-        body {
+        /* Page style */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body, html {
+            height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            background: url('your-4k-background.jpg') no-repeat center center fixed;
-            background-size: cover;
+            color: #ffffff;
+            overflow: hidden;
+            background-color: #000; /* Black 4K background */
         }
-        .trading-container {
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 20px;
-            border-radius: 8px;
-            width: 300px;
+
+        /* Background cube animation */
+        .cube {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, #6e6eff, #00e0ff);
+            transform-style: preserve-3d;
+            animation: rotateCube 6s linear infinite;
+        }
+
+        .cube::before,
+        .cube::after {
+            content: '';
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, #6e6eff, #00e0ff);
+            top: 0;
+            left: 0;
+            transform-origin: center;
+        }
+
+        .cube::before {
+            transform: rotateX(90deg);
+        }
+
+        .cube::after {
+            transform: rotateY(90deg);
+        }
+
+        @keyframes rotateCube {
+            0% { transform: rotate3d(1, 1, 0, 0deg); }
+            100% { transform: rotate3d(1, 1, 0, 360deg); }
+        }
+
+        /* Content styling */
+        .container {
             text-align: center;
-            color: white;
+            padding: 20px;
+            z-index: 1; /* Place content above cube */
         }
-        .button {
-            padding: 10px 20px;
-            margin: 10px;
-            font-size: 16px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
+
+        h1 {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 0.2em;
+            color: #FFFFFF; /* Deep white color */
+            animation: glow 2s ease-in-out infinite alternate;
         }
-        .up-button {
-            background-color: #28a745;
+
+        @keyframes glow {
+            0% {
+                text-shadow: 0 0 5px #FFFFFF, 0 0 10px #FFFFFF, 0 0 15px #CCCCCC, 0 0 20px #999999;
+            }
+            100% {
+                text-shadow: 0 0 10px #FFFFFF, 0 0 20px #FFFFFF, 0 0 30px #CCCCCC, 0 0 40px #999999;
+            }
         }
-        .down-button {
-            background-color: #dc3545;
+
+        p {
+            font-size: 1.2em;
+            margin-bottom: 1.5em;
         }
-        .timer {
-            font-size: 24px;
-            margin-bottom: 10px;
+
+        .footer {
+            font-size: 0.9em;
+            opacity: 0.7;
         }
     </style>
 </head>
 <body>
-    <div class="trading-container">
-        <div class="timer" id="timer">01:00</div>
-        <button class="button up-button" onclick="trade('up')">Up</button>
-        <button class="button down-button" onclick="trade('down')">Down</button>
-        <div id="result"></div>
+    <!-- 3D Cube Animation -->
+    <div class="cube"></div>
+
+    <div class="container">
+        <!-- Telegram Channel Name with Deep White Animation -->
+        <h1>Premium Things By Alonê&S'M☠️</h1>
+        
+        <!-- Bio -->
+        <p>All Premium app free here and any website programming code free.</p>
+        
+        <!-- Developer Credit -->
+        <div class="footer">Developer: SM SOAD</div>
     </div>
-
-    <script>
-        // Timer function for 1 minute countdown
-        let timer = 60;
-        let timerElement = document.getElementById("timer");
-
-        function updateTimer() {
-            if (timer > 0) {
-                timer--;
-                timerElement.textContent = timer < 10 ? `00:0${timer}` : `00:${timer}`;
-            }
-        }
-
-        setInterval(updateTimer, 1000);
-
-        // Function to handle trade
-        function trade(direction) {
-            let resultElement = document.getElementById("result");
-            if (timer > 0) {
-                resultElement.textContent = `You placed a ${direction} trade.`;
-            } else {
-                resultElement.textContent = "Time's up! Please wait for the next round.";
-            }
-        }
-    </script>
 </body>
 </html>
