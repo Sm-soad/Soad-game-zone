@@ -1,111 +1,86 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Channel</title>
+    <title>বাংলাদেশের সর্বশেষ সংবাদ</title>
     <style>
-        /* Page style */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        body {
             font-family: Arial, sans-serif;
-        }
-        
-        body, html {
-            height: 100%;
+            background-color: #f4f4f9;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            color: #ffffff;
-            overflow: hidden;
-            background-color: #000; /* Black 4K background */
-        }
-
-        /* Background cube animation */
-        .cube {
-            position: absolute;
-            width: 150px;
-            height: 150px;
-            background: linear-gradient(135deg, #6e6eff, #00e0ff);
-            transform-style: preserve-3d;
-            animation: rotateCube 6s linear infinite;
-        }
-
-        .cube::before,
-        .cube::after {
-            content: '';
-            position: absolute;
-            width: 150px;
-            height: 150px;
-            background: linear-gradient(135deg, #6e6eff, #00e0ff);
-            top: 0;
-            left: 0;
-            transform-origin: center;
-        }
-
-        .cube::before {
-            transform: rotateX(90deg);
-        }
-
-        .cube::after {
-            transform: rotateY(90deg);
-        }
-
-        @keyframes rotateCube {
-            0% { transform: rotate3d(1, 1, 0, 0deg); }
-            100% { transform: rotate3d(1, 1, 0, 360deg); }
-        }
-
-        /* Content styling */
-        .container {
-            text-align: center;
             padding: 20px;
-            z-index: 1; /* Place content above cube */
         }
-
         h1 {
-            font-size: 3em;
-            font-weight: bold;
-            margin-bottom: 0.2em;
-            color: #FFFFFF; /* Deep white color */
-            animation: glow 2s ease-in-out infinite alternate;
+            color: #333;
         }
-
-        @keyframes glow {
-            0% {
-                text-shadow: 0 0 5px #FFFFFF, 0 0 10px #FFFFFF, 0 0 15px #CCCCCC, 0 0 20px #999999;
-            }
-            100% {
-                text-shadow: 0 0 10px #FFFFFF, 0 0 20px #FFFFFF, 0 0 30px #CCCCCC, 0 0 40px #999999;
-            }
+        .news-container {
+            max-width: 600px;
+            width: 100%;
         }
-
-        p {
-            font-size: 1.2em;
-            margin-bottom: 1.5em;
+        .news-item {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-
-        .footer {
-            font-size: 0.9em;
-            opacity: 0.7;
+        .news-item h2 {
+            font-size: 20px;
+            margin: 0 0 10px;
+            color: #0073e6;
+        }
+        .news-item p {
+            font-size: 14px;
+            color: #555;
+        }
+        .news-item a {
+            text-decoration: none;
+            color: #0073e6;
         }
     </style>
 </head>
 <body>
-    <!-- 3D Cube Animation -->
-    <div class="cube"></div>
 
-    <div class="container">
-        <!-- Telegram Channel Name with Deep White Animation -->
-        <h1>Premium Things By Alonê&S'M☠️</h1>
-        
-        <!-- Bio -->
-        <p>All Premium app free here and any website programming code free.</p>
-        
-        <!-- Developer Credit -->
-        <div class="footer">Developer: SM SOAD</div>
+    <h1>বাংলাদেশের সর্বশেষ সংবাদ</h1>
+    <div class="news-container" id="newsContainer">
+        <!-- সংবাদ এখানে প্রদর্শিত হবে -->
     </div>
+
+    <script>
+        async function fetchBangladeshNews() {
+            const apiKey = '653bc51b85fc4b4785ea016caa1b3d1c'; // আপনার NewsAPI API কী এখানে বসান
+            const url = `https://newsapi.org/v2/top-headlines?country=bd&apiKey=${apiKey}`;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error("সংবাদ লোড করতে সমস্যা হয়েছে");
+
+                const data = await response.json();
+                const newsContainer = document.getElementById("newsContainer");
+                newsContainer.innerHTML = ""; // পূর্ববর্তী সংবাদ সাফ করা
+
+                data.articles.forEach(article => {
+                    const newsItem = document.createElement("div");
+                    newsItem.classList.add("news-item");
+
+                    newsItem.innerHTML = `
+                        <h2><a href="${article.url}" target="_blank">${article.title}</a></h2>
+                        <p>${article.description || "বর্ণনা পাওয়া যায়নি"}</p>
+                    `;
+                    newsContainer.appendChild(newsItem);
+                });
+            } catch (error) {
+                document.getElementById("newsContainer").innerHTML = `<p>ত্রুটি: ${error.message}</p>`;
+            }
+        }
+
+        // পেজ লোড হওয়ার সাথে সাথে সংবাদ আনুন
+        window.onload = fetchBangladeshNews;
+    </script>
+
 </body>
 </html>
